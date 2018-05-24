@@ -46,11 +46,11 @@ GenerateMultivariateDataset <- function(nindivs, ncalls, nvars, covar, individua
 
 
 #### test function ####
-nindivs <- 5
-ncalls <- 10
-nvars <- 2
-covar <- 0
-individuality <- 3
+nindivs <- 5 # there will be 5 individuals in the dataset
+ncalls <- 10 # there will be 10 call per each individual in the dataset
+nvars <- 2 # there will be 2 variables 
+covar <- 0 # covarianece between variables will be zero (= variables will be independent)
+individuality <- 3 # within-individual SD for each variable will be 3 times lower than between-individual SD 
 temp <- GenerateMultivariateDataset(nindivs,ncalls,nvars,covar,individuality)
 temp
 plot(temp$X1, temp$X2, col=temp$id, pch=20, main=paste0('Individuality (id) = ', individuality), xlab='variable 1', ylab='variable 2')

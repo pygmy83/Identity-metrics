@@ -1,3 +1,4 @@
+# Function generating multivariate dataset
 GenerateMultivariateDataset <- function(nindivs, ncalls, nvars, covar, individuality){
   
   #build covariance matrix

@@ -14,6 +14,7 @@ pRange <- c(2, 4, 6, 8, 10) #, 6, 8, 10)  # value range for number of parameters
 itRange <- c(1:20)# value range for number of iterations
 idRange <- c(0.01, 1, 2.5, 5, 10) # value range for individuality in data
 covRange <- c(0, 0.25, 0.5, 0.75, 1) # value range for covariance 
+dataz <- ItterateDatasets(covRange,idRange,iRange,oRange,pRange,itRange) 
 
 # analysis to get HS values up to about 10 for DS and HS relationship
 iRange <- c(4, 8, 12, 16, 20, 25, 30, 35, 40, 50, 75, 100) #, 15, 20, 25, 30, 35, 40, 45, 50) # range for number of individuals:
@@ -22,6 +23,7 @@ pRange <- c(2, 4, 6, 8, 10) #, 6, 8, 10)  # range for number of parameters = pcs
 itRange <- c(1:10)# range for number of iterations
 idRange <- c(0.1, 0.25, 0.5, 0.75, 1, 1.33, 1.66, 2)
 covRange <- c(0)
+dataz <- ItterateDatasets(covRange,idRange,iRange,oRange,pRange,itRange) 
 
 ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
   dataz <- NULL

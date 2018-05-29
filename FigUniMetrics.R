@@ -1,18 +1,17 @@
-# FigMutiMetrics
+# FigUniMetrics
 # library(ggplot2), library(gridExtra) 
 
 # https://stats.stackexchange.com/questions/177129/ggplot-and-loops
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
 
-
 oneplotwidth <- 1.4
 oneplotheight <- 1.4
 
-varstoplotX <- c(1:5)
+varstoplotX <- c(1:3)
 #varstoplotXnames <- names(dataz)[1:5]
-varstoplotXnames <- c('Individuality', 'Variables', 'Covariance', 'Individuals', 'Observations')
-varstoplotY <- c(7:10)
-varstoplotYnames <- names(dataz)[7:10]
+varstoplotXnames <- c('Individuality', 'Individuals', 'Observations')
+varstoplotY <- c(8:14)
+varstoplotYnames <- names(dataz)[8:14]
 xypairs <- data.frame(param=rep(varstoplotX, length(varstoplotY)),
                       metric=rep(varstoplotY, each=length(varstoplotX)))
 xypairs.names <- data.frame(param=rep(varstoplotXnames, length(varstoplotY)),
@@ -42,33 +41,34 @@ for (i in 1:nrow(xypairs)) {
     wanted[j] <- wanted[j-1]+wanted.n
     wanted.n <- wanted.n-1
   }
-    
+  
   comparison <- row.names(result.Tukey)[wanted]
   pvals <- round(result.Tukey$p.adj[wanted],3)
   results[i,6] <- ifelse(length(comparison[pvals>0.05])==0, "all sig", paste(" ", paste(comparison[pvals<0.05],collapse="  ")))
   results[i,7] <- ifelse(length(tail(comparison[pvals<0.05],1))==0, 'no sig', paste(" ", comparison[pvals<0.05][1]))
   results[i,8] <- ifelse(length(tail(comparison[pvals<0.05],1))==0, 'no sig', paste(" ", tail(comparison[pvals<0.05],1)))
   
-  #### prepare plots
-  dataz.temp <- data.frame(x=dataz[,param], y=dataz[,metric])
+  
+  ### prepare plots
+  dataz.temp <- data.frame(x=dataz[,param], y=dataz[,metric]) 
   dataz.sum <- summarySE(dataz.temp, measurevar='y', groupvars='x')
   #xvalues <- theme(axis.text.x = element_text(color="black"))
   # xvalues <- theme(axis.text.x = element_blank())
   
   # whether to plot x lab
-  if (i %in% c(16, 17, 18, 19,20)) {
+  if (i %in% c(19, 20,21)) {
     #xtitle <- theme(axis.title.x = element_text(color="black"))
     xlabname <- as.character(xypairs.names[i,1])
   } else {
-    xlabname <- as.character(xypairs.names[i,1]) #''
+    xlabname <- as.character(xypairs.names[i,1]) # ''
   }
   
   # whether to plot y lab
-  if (i %in% c(1, 6, 11, 16)) {
+  if (i %in% c(1, 4, 7, 10, 13, 16, 19)) {
     #xtitle <- theme(axis.title.x = element_text(color="black"))
     ylabname <- as.character(xypairs.names[i,2])
   } else {
-    ylabname <- as.character(xypairs.names[i,2]) #''
+    ylabname <- as.character(xypairs.names[i,2]) # ''
   }
   
   
@@ -98,7 +98,8 @@ for (i in 1:nrow(xypairs)) {
 
 results <- data.frame(results)
 names(results) <- c('pair', 'df', 'dfres', 'F', 'p', 'sigTukeys', 'firstsigTukey', 'lastsigTukey')
-write.table(results, 'res-IterateDatasetsMulti.csv', sep=';',row.names=F)
+write.table(results, 'res-IterateDatasetsUni.csv', sep=';',row.names=F)
+
 
 #margin = theme(plot.margin = unit(c(2,2,2,2), "cm"))
 #grid.arrange(grobs = lapply(pl, "+", margin))
@@ -106,31 +107,3 @@ write.table(results, 'res-IterateDatasetsMulti.csv', sep=';',row.names=F)
 win.metafile("mygraph.wmf", width=length(varstoplotX)*oneplotwidth, height=length(varstoplotY)*oneplotwidth)
 grid.arrange(grobs=plots, ncol=length(varstoplotX))
 dev.off()
-
-
-
-### ANOTHER VARIANT WITH GPLOTS:
-
-# plot figures for Fig XX 'Multivariate identity metrics'
-varstoplotX <- c(1:5)
-varstoplotXnames <- names(dataz)[1:5]
-varstoplotY <- c(7:10)
-varstoplotYnames <- names(dataz)[7:10]
-
-pdf("mygraph.pdf", width=7, height=6)
-par(mfrow=c(4,5), mar=c(0,0,0,0), oma=c(3,3,0.1,0.1))
-for (i in varstoplotY) {
-  for (j in varstoplotX) {
-    y <- dataz[,i]
-    x <- dataz[,j]
-    plotmeans(y~x, bars=T,n.label=F,barcol='black',ylim=c(min(y), max(y)),
-              yaxt ='n', xaxt='n',
-              cex=1, cex.lab=0.8, cex.axis=0.8)
-    #xlab=names(dataz)[j],
-    #ylab=names(dataz)[i], 
-    #    summary(aov(y~as.factor(x), data=dataz))
-    #    TukeyHSD(aov(y~as.factor(x), data=dataz))
-  }
-}
-dev.off()
-

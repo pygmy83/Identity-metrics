@@ -1,6 +1,6 @@
 destination <- './empirical datasets examples'
 temp <- DatasetSummary(destination, pca=T)
-write.table(temp, paste0(destination, '/datasetsummary.txt'), sep='\t')
+write.table(temp, paste0(destination, '/datasetsummary.csv'), sep=';')
 
 DatasetSummary <- function(destination, pca){
   d.summary <- NULL
@@ -35,23 +35,15 @@ DatasetSummary <- function(destination, pca){
   
     HS <- calcHSnpergroup(dataz)[2]
     DS <- calcDS(dataz)
-#    HM <- calcHM2(dataz)
-#    MI <- calcMI(dataz)
-#    AMI <- MI[2]
-#    NMI <- MI[1]
-#    MI <- MI[3]
-#    ICC <- calcICC2(dataz)
-#    AUC <- as.numeric(calcAUC(dataz))
+    HM <- calcHM(dataz)
+    MI <- calcMI(dataz)
     datazpred <- data.frame(w=nindivs, x=round(mean(ncalls),0), y=DS)
-    #HSestDSIO <- predict(m1, datazpred)
-#    HSestDSIO <- predict(m1, datazpred)
-    #HSestDSIO <- predict(m1exp, datazpred)
-#    NMIest <- calcNMIest(dataz[,1], DS)
+    HSest <- predict(m1, datazpred)
     datazpred <- data.frame(w=nindivs, x=round(mean(ncalls),0), z=HS)
-#    DSest <- predict(m1estDS, datazpred) # m1red - m1redestDS
+    DSest <- predict(m1estDS, datazpred) # m1red - m1redestDS
     
     d.summary <- rbind(d.summary, data.frame(filelist[i], nindivs, minncalls, 
-                                             maxncalls, nvars, nPCAs, HS, DS))
+                                             maxncalls, nvars, nPCAs, HS, DS, HM, MI, HSest, DSest))
   }
   
   #d.summary$HSrank <- rank(datasetsummary$HS, ties.method= "average")

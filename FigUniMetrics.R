@@ -3,7 +3,7 @@
 
 # https://stats.stackexchange.com/questions/177129/ggplot-and-loops
 # https://cran.r-project.org/web/packages/egg/vignettes/Ecosystem.html
-
+dataz <- read.delim('data-IterateDatasetsUni.csv', sep=';', header=T)
 oneplotwidth <- 1.4
 oneplotheight <- 1.4
 

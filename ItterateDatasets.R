@@ -96,23 +96,14 @@ ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
 
 write.table(dataz, 'clipboard-100000', sep='\t', row.names=F)
 
-# plot figures for Fig XX 'Multivariate identity metrics'
-varstoplotX <- c(1:5)
-varstoplotXnames <- names(dataz)[1:5]
-varstoplotY <- c(7:10)
-varstoplotYnames <- names(dataz)[7:10]
-for (i in varstoplotX) {
-  for (j in varstoplotY) {
-    y <- dataz[,j]
-    x <- dataz[,i]
-    plotmeans(y~x, bars=T,n.label=F,barcol='black',ylab=varstoplotYnames[j], ylim=c(min(y), max(y)),xlab=varstoplotXnames[i], cex=2, cex.lab=2.5, cex.main=2.5, cex.axis=2)
-    summary(aov(y~as.factor(x), data=dataz))
-    TukeyHSD(aov(y~as.factor(x), data=dataz))
-  }
-}
+y <- dataz$HM
+x <- dataz$i
+plotmeans(y~x, bars=T,n.label=F,barcol='black',
+          yaxt ='n', xaxt='n',
+          cex=2, cex.lab=2, cex.axis=2)
 
-y <- dataz$MI
-x <- dataz$o
+y <- dataz$DS
+x <- dataz$HS
 plot(y~x)
 
 

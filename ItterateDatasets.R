@@ -16,9 +16,9 @@ idRange <- c(0.01, 1, 2.5, 5, 10) # value range for individuality in data
 covRange <- c(0, 0.25, 0.5, 0.75, 1) # value range for covariance 
 dataz <- ItterateDatasets(covRange,idRange,iRange,oRange,pRange,itRange) 
 
-# analysis to get HS values up to about 10 for DS and HS relationship
-iRange <- c(4, 8, 12, 16, 20, 25, 30, 35, 40, 50, 75, 100) #, 15, 20, 25, 30, 35, 40, 45, 50) # range for number of individuals:
-oRange <- c(4, 8, 12, 16, 20, 30, 40, 50, 75, 100) #, 12, 16, 20) # range for number of observations = calls
+# analysis to get HS values up to about 10 for DS and HS conversions
+iRange <- c(5, 15, 20, 25, 30, 35, 40) # range for number of individuals:
+oRange <- c(4, 8, 12, 16, 20) # range for number of observations = calls
 pRange <- c(2, 4, 6, 8, 10) #, 6, 8, 10)  # range for number of parameters = pcs
 itRange <- c(1:10)# range for number of iterations
 idRange <- c(0.1, 0.25, 0.5, 0.75, 1, 1.33, 1.66, 2)
@@ -54,24 +54,19 @@ ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
               
               DS <- calcDS(temp)
               HS <- calcHSnpergroup(temp)[2]
-              datazpred <- data.frame(w=iRange[i], x=oRange[o], y=DS)
-              HSestLoess <- predict(m1, datazpred)
-              HSestLin <- predict(m3, data.frame(y=DS))
-              HSvarcomp <- calcHSvarcomp(temp)
-              #HSvarcomp <- calcHSvarcomp(temp, varexplained)[1]
               MI <- calcMI(temp)
-              #AMI <- MI[2]
-              #NMI <- MI[1]
               HM <- calcHM(temp)
-              #Fsel1 <- NA #calcFtype1(temp,2) # this is type I SS
-              #Fsel2 <- calcFtype2(temp,2) # this is type II SS
-              #ICC <- calcICC2(temp) # lmer method
-              #auc <- calcAUC(temp)
+
+              datazpred <- data.frame(w=iRange[i], x=oRange[o], y=DS)
+              HSestLoess <- predict(DStoHSloess, datazpred)
+              HSestLin <- predict(DStoHSlin, data.frame(y=DS))
+              
               datazpred <- data.frame(w=iRange[i], x=oRange[o], z=HS)
-              DSest <- predict(m1estDS, datazpred) # m1red - m1redestDS
+              DSestLoess <- predict(HStoDSloess, datazpred) 
+              DSestLin <- predict(HStoDSlin, data.frame(y=HS))
               
               dataz <- rbind(dataz, data.frame(covRange[cov],idRange[id],iRange[i], oRange[o], pRange[p], it, 
-                                                 DS, HS, HSestLoess, HSestLin, HSvarcomp, MI, HM, DSest))
+                                                 DS, HS, MI, HM, HSestLoess, HSestLin, DSestLoess, DSestLin))
               #datasetname <- paste(i,o,p,it)
               #write.table(temp, file=paste0('dataset', datasetname,'.csv'), sep=';', row.names = F)
             } #it
@@ -102,142 +97,3 @@ plotmeans(y~x, bars=T,n.label=F,barcol='black',
           yaxt ='n', xaxt='n',
           cex=2, cex.lab=2, cex.axis=2)
 
-y <- dataz$DS
-x <- dataz$HS
-plot(y~x)
-
-
-plotmeans(auc~i, data=nodata, bars=T,n.label=F, bar.col='black')
-plot(temp[,2], temp[,3], col=temp$id, pch=20)
-boxplot(temp[,2] ~ temp[,1])
-
-
-
-
-#### comparison of real and estimated HS (loess) #####
-HSest <- na.omit(nodata$HSestDSIO)
-HSreal <- na.omit(nodata$HS)
-
-HSest <- HSest[which(HSreal<8)]
-HSreal <- HSreal[which(HSreal<8)]
-
-summary(lm(HSest~HSreal))
-plot(HSest~HSreal, xlim=c(0,15), ylim=c(0,15), ylab='HSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
-new.data <- predict(lm(HSest~HSreal),interval="prediction")  
-S <- sqrt((sum((new.data[,1] - HSest)^2)) / length(HSest))
-PI <- new.data[1,1] - new.data[1,2]
-print(paste('Standard error of estimate:', round(S, 2)))
-print(paste('Prediction interval:', round(PI, 2)))
-
-lines(HSreal,new.data[,1],col="red",lwd=2)
-lines(HSreal,new.data[,2],col="grey",lwd=2)
-lines(HSreal,new.data[,3],col="grey",lwd=2)
-
-
-#### comparison of real and estimated HS (linear) #####
-HSest <- na.omit(nodata$HSestLin)
-HSreal <- na.omit(nodata$HS)
-
-HSest <- HSest[which(HSreal<8)]
-HSreal <- HSreal[which(HSreal<8)]
-
-summary(lm(HSest~HSreal))
-plot(HSest~HSreal, xlim=c(0,10), ylim=c(0,10), ylab='HSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
-new.data <- predict(lm(HSest~HSreal),interval="prediction")  
-S <- sqrt((sum((new.data[,1] - HSest)^2)) / length(HSest))
-PI <- new.data[1,1] - new.data[1,2]
-print(paste('Standard error of estimate:', round(S, 2)))
-print(paste('Prediction interval:', round(PI, 2)))
-
-lines(HSreal,new.data[,1],col="red",lwd=2)
-lines(HSreal,new.data[,2],col="grey",lwd=2)
-lines(HSreal,new.data[,3],col="grey",lwd=2)
-
-
-
-#### comparison of real and estimated DS (loess) #####
-DSest <- na.omit(nodata$DSest)
-DSreal <- na.omit(nodata$DiscScore)
-
-DSest <- na.omit(nodata$DSest[which(nodata$HS<8)])
-DSreal <- na.omit(nodata$DiscScore[which(nodata$HS<8)])
-
-summary(lm(DSest~DSreal))
-plot(DSest~DSreal, xlim=c(0,1.2), ylim=c(0,1.2), ylab='DSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
-new.data <- predict(lm(DSest~DSreal),interval="prediction")  
-S <- sqrt((sum((new.data[,1] - DSest)^2)) / length(DSest))
-PI <- new.data[1,1] - new.data[1,2]
-print(paste('Standard error of estimate:', round(S, 2)))
-print(paste('Prediction interval:', round(PI, 2)))
-
-lines(DSreal,new.data[,1],col="red",lwd=2)
-lines(DSreal,new.data[,2],col="grey",lwd=2)
-lines(DSreal,new.data[,3],col="grey",lwd=2)
-
-
-
-#### comparison of real and estimated DS (linear) #####
-#DSest <- na.omit(nodata$DSestLin)
-#DSreal <- na.omit(nodata$DiscScore)
-
-DSest <- na.omit(nodata$DSestLin[which(nodata$HS<8)])
-DSreal <- na.omit(nodata$DiscScore[which(nodata$HS<8)])
-
-summary(lm(DSest~DSreal))
-plot(DSest~DSreal, xlim=c(0,1.2), ylim=c(0,1.2), ylab='DSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
-new.data <- predict(lm(DSest~DSreal),interval="prediction")  
-S <- sqrt((sum((new.data[,1] - DSest)^2)) / length(DSest))
-PI <- new.data[1,1] - new.data[1,2]
-print(paste('Standard error of estimate:', round(S, 2)))
-print(paste('Prediction interval:', round(PI, 2)))
-
-lines(DSreal,new.data[,1],col="red",lwd=2)
-lines(DSreal,new.data[,2],col="grey",lwd=2)
-lines(DSreal,new.data[,3],col="grey",lwd=2)
-
-
-
-###############################################
-
-pairs(~DiscScore+i+o,data=nodata)
-scatterplot.matrix(~DiscScore+i+o, data=nodata)
-
-xdensity <- ggplot(nodata, aes(HS, fill=id)) + 
-  geom_density(alpha=.5) + 
-  scale_fill_manual(values = c('#999999','#E69F00', '#999999', '#E69F00', '#999999')) + 
-  theme(legend.position = "none")
-xdensity
-
-
-#library(rgl)
-#library(car)
-scatter3d(HS ~ i + o, data=nodata, fit="smooth")
-dataz<-temp[temp$id==0.01,]
-plot3d(dataz$i, dataz$o, dataz$HS)
-
-individuality50ind.results <- nodata
-individuality0.results <- nodata
-individuality2.results <- nodata
-individuality4.results <- nodata
-individuality6.results <- nodata
-individuality8.results <- nodata
-
-plotmeans(DiscScore ~ o, bars=T, ylim=c(0, 1.2), xlab='number of calls', 
-          ylab='discrimination score (10 indivs)', pch=0, data=individuality0.results)
-plotmeans(DiscScore ~ o, bars=T, data=individuality2.results, pch=1, add=T)
-plotmeans(DiscScore ~ o, bars=T, data=individuality4.results, pch=2, add=T)
-plotmeans(DiscScore ~ o, bars=T, data=individuality6.results, pch=3, add=T)
-plotmeans(DiscScore ~ o, bars=T, data=individuality8.results, pch=4, add=T)
-legend(40,1.2, c("individuality=0", "individuality=2", "individuality=4", 'individuality=6', 'individuality=8'), pch=c(0,1,2,3,4))
-
-plotmeans(HSall ~ o, bars=T, ylim=c(-1, 12), xlab='number of calls', 
-          ylab='HS (10 indivs)', pch=0, data=individuality0.results)
-plotmeans(HSall ~ o, bars=T, data=individuality2.results, pch=1, add=T)
-plotmeans(HSall ~ o, bars=T, data=individuality4.results, pch=2, add=T)
-plotmeans(HSall ~ o, bars=T, data=individuality6.results, pch=3, add=T)
-plotmeans(HSall ~ o, bars=T, data=individuality8.results, pch=4, add=T)
-legend(7,12, c("individuality=0", "individuality=2", "individuality=4", 'individuality=6', 'individuality=8'), pch=c(0,1,2,3,4))

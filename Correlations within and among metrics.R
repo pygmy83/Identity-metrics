@@ -122,50 +122,36 @@ t.test(result.cor.within[,2], result.cor.within[,8], paired=T)
 
 
 ### compute correlations in 'result' - among metric correlations ################
+result <- read.delim('data-consistency-result-empirical.csv', header=T, sep=';')
+summary.all <- read.delim('data-consistency-summary.all-empirical.csv', header=T, sep=';')
 result.cor.among <- NULL
 result$it <- as.factor(result$it)
 
-tottime <- proc.time()
 for (i in 1:nlevels(result$it)){
-  
   temp <- result[result$it==i,]  
-  ptm <- proc.time()
-  
-  cormet='spearman'
-  HSDScor <- cor(summary.all[,7], temp[,8], method=cormet, use="complete.obs")
-  HSHMcor <- cor(summary.all[,7], temp[,9], method=cormet, use="complete.obs")
-  HSNMIcor <- cor(summary.all[,7], temp[,11], method=cormet, use="complete.obs")
-  HSMIcor <- cor(summary.all[,7], temp[,12], method=cormet, use="complete.obs")
-  HSHSestcor1 <- cor(summary.all[,7], temp[,15], method=cormet, use="complete.obs")
-  HSHSestcor2 <- cor(summary.all[,7], temp[,15], method='pearson', use="complete.obs")
   DScor.all <- cor(summary.all[,8], temp[,8], method='pearson', use="complete.obs")
-  HSNMIestcor <- cor(summary.all[,7], temp[,16], method=cormet, use="complete.obs")
-  DSDSestcor.all <- cor(summary.all[,8], temp[,17], method='pearson', use="complete.obs")
+  DSDSestcor.all <- cor(summary.all[,8], temp[,12], method='pearson', use="complete.obs")
+  DSDSestcor <- cor(temp[,8], temp[,12], method='pearson', use="complete.obs")
   HSHScor.all <- cor(summary.all[,7], temp[,7], method='pearson', use="complete.obs")
-  DSDSestcor <- cor(temp[,8], temp[,17], method='pearson', use="complete.obs")
-  HSHSestcor <- cor(temp[,7], temp[,15], method='pearson', use="complete.obs")
-  
-  #temp <- data.frame(HSDScor, HSHMcor, HSNMIcor, HSMIcor, HSHSestcor1, HSHSestcor2, 
-  #                   DScor2, HSNMIestcor, DSDSestcor)
-  temp <- data.frame(HSHScor.all, HSDScor, HSHMcor, HSNMIcor, HSMIcor, HSHSestcor1, HSHSestcor2, 
-                     DScor.all, HSNMIestcor, DSDSestcor.all, HSHScor, DSDSestcor, HSHSestcor)
+  HSHSestcor.all <- cor(summary.all[,7], temp[,11], method='pearson', use="complete.obs")
+  HSHSestcor <- cor(temp[,7], temp[,11], method='pearson', use="complete.obs")
+
+  temp <- data.frame(DScor.all, DSDSestcor.all, DSDSestcor, HSHScor.all, HSHSestcor.all, HSHSestcor)
   result.cor.among <- rbind(result.cor.among, temp)
-  
-  print(i)
-  print(proc.time()-ptm)
-}; print('total time:'); print(proc.time()-tottime)
+}
+
+summary(result.cor.among)
 
 # DS and DSest correlations
-boxplot(result.cor.among, use.cols = T, ylim=c(0,1))
-boxplot(result.cor.among[,8], result.cor.among[,10], result.cor.among[,12], names=names(result.cor.among)[c(8,10, 12)])
-t.test(result.cor.among[,9], result.cor.among[,11], paired=T)
+boxplot(result.cor.among[,1], result.cor.among[,2], result.cor.among[,3], names=names(result.cor.among)[c(1,2, 3)])
+a <- result.cor.among[,1:3]
+friedman.test(as.matrix(a))
+posthoc.friedman.nemenyi.test(as.matrix(a)) # library(PMCMR)
+
 
 # HS and HSest correlations
-boxplot(result.cor.among[,1], result.cor.among[,7], result.cor.among[,13], names=names(result.cor.among)[c(1,7,13)])
-t.test(result.cor.among[,9], result.cor.among[,7], paired=T)
+boxplot(result.cor.among[,4], result.cor.among[,5], result.cor.among[,6], names=names(result.cor.among)[c(4,5,6)])
+a <- result.cor.among[,4:6]
+friedman.test(as.matrix(a))
+posthoc.friedman.nemenyi.test(as.matrix(a)) # library(PMCMR)
 
-
-write.table(summary.all, 'clipboard-1000', row.names=F, sep='\t')
-write.table(result, 'clipboard-1000', row.names=F, sep='\t')
-write.table(result.cor.within, 'clipboard-1000', row.names=F, sep='\t')
-write.table(result.cor.among, 'clipboard-1000', row.names=F, sep='\t')

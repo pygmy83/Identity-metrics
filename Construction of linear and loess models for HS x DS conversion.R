@@ -28,68 +28,10 @@ m4 <- lm(y ~ z) # HS to DS linear
 # separate dataset was used to test the model; the dataset was build again with the same settings as the previous dataset
 
 dataz <- read.delim('data-HSxDSconversion-model testing data.csv', header=T, sep=';') 
-             
-
-#### comparison of real and estimated HS (loess) #####
-HSest <- na.omit(dataz$HsestLoess)
-HSreal <- na.omit(dataz$HS)
-#HSest <- HSest[which(HSreal<8)]
-#HSreal <- HSreal[which(HSreal<8)]
-
-summary(lm(HSest~HSreal))
-plot(HSest~HSreal, xlim=c(0,15), ylim=c(0,15), ylab='HSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
-new.data <- predict(lm(HSest~HSreal),interval="prediction")  
-S <- sqrt((sum((new.data[,1] - HSest)^2)) / length(HSest))
-PI <- new.data[1,1] - new.data[1,2]
-print(paste('Standard error of estimate:', round(S, 2)))
-print(paste('Prediction interval:', round(PI, 2)))
-
-lines(HSreal,new.data[,1],col="red",lwd=2)
-lines(HSreal,new.data[,2],col="grey",lwd=2)
-lines(HSreal,new.data[,3],col="grey",lwd=2)
 
 
-
-#### comparison of real and estimated HS (linear) #####
-HSest <- na.omit(dataz$HSestLin)
-HSreal <- na.omit(dataz$HS)
-#HSest <- HSest[which(HSreal<8)]
-#HSreal <- HSreal[which(HSreal<8)]
-
-summary(lm(HSest~HSreal))
-plot(HSest~HSreal, xlim=c(0,10), ylim=c(0,10), ylab='HSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
-new.data <- predict(lm(HSest~HSreal),interval="prediction")  
-S <- sqrt((sum((new.data[,1] - HSest)^2)) / length(HSest))
-PI <- new.data[1,1] - new.data[1,2]
-print(paste('Standard error of estimate:', round(S, 2)))
-print(paste('Prediction interval:', round(PI, 2)))
-
-lines(HSreal,new.data[,1],col="red",lwd=2)
-lines(HSreal,new.data[,2],col="grey",lwd=2)
-lines(HSreal,new.data[,3],col="grey",lwd=2)
-
-
-
-#### comparison of real and estimated DS (loess) #####
-DSest <- na.omit(dataz$DSestLoess)
-DSreal <- na.omit(dataz$DS)
-#DSest <- na.omit(dataz$DSestLoess[which(dataz$HS<8)])
-#DSreal <- na.omit(dataz$DS[which(dataz$HS<8)])
-
-summary(lm(DSest~DSreal))
-plot(DSest~DSreal, xlim=c(0,1.2), ylim=c(0,1.2), ylab='DSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
-new.data <- predict(lm(DSest~DSreal),interval="prediction")  
-S <- sqrt((sum((new.data[,1] - DSest)^2)) / length(DSest))
-PI <- new.data[1,1] - new.data[1,2]
-print(paste('Standard error of estimate:', round(S, 2)))
-print(paste('Prediction interval:', round(PI, 2)))
-
-lines(DSreal,new.data[,1],col="red",lwd=2)
-lines(DSreal,new.data[,2],col="grey",lwd=2)
-lines(DSreal,new.data[,3],col="grey",lwd=2)
+pdf("mygraph.pdf", width=7, height=7)
+par(mfrow=c(2,2))
 
 
 
@@ -100,19 +42,83 @@ DSreal <- na.omit(dataz$DS)
 #DSreal <- na.omit(dataz$DS[which(dataz$HS<8)])
 
 summary(lm(DSest~DSreal))
-plot(DSest~DSreal, xlim=c(0,1.2), ylim=c(0,1.2), ylab='DSest', col=rgb(0,100,0,10,maxColorValue=255), pch=16)
-abline(0,1, col='grey', lwd=2, lty=2)
+plot(DSest~DSreal, xlim=c(0,1.15), xlab='DS',ylim=c(0,1.15), ylab='DS (linear estimate)', col=rgb(0,0,0,10,maxColorValue=255), pch=16)
+abline(0,1, col='grey', lwd=1, lty=2)
 new.data <- predict(lm(DSest~DSreal),interval="prediction")  
 S <- sqrt((sum((new.data[,1] - DSest)^2)) / length(DSest))
 PI <- new.data[1,1] - new.data[1,2]
 print(paste('Standard error of estimate:', round(S, 2)))
 print(paste('Prediction interval:', round(PI, 2)))
 
-lines(DSreal,new.data[,1],col="red",lwd=2)
-lines(DSreal,new.data[,2],col="grey",lwd=2)
-lines(DSreal,new.data[,3],col="grey",lwd=2)
+lines(DSreal,new.data[,1],col="black",lwd=1)
+lines(DSreal,new.data[,2],col="grey",lwd=1)
+lines(DSreal,new.data[,3],col="grey",lwd=1)
 
-  
+
+
+#### comparison of real and estimated DS (loess) #####
+DSest <- na.omit(dataz$DSestLoess)
+DSreal <- na.omit(dataz$DS)
+#DSest <- na.omit(dataz$DSestLoess[which(dataz$HS<8)])
+#DSreal <- na.omit(dataz$DS[which(dataz$HS<8)])
+
+summary(lm(DSest~DSreal))
+plot(DSest~DSreal, xlim=c(0,1.15), xlab='DS', ylim=c(0,1.15), ylab='DS (loess estimate)', col=rgb(0,0,0,10,maxColorValue=255), pch=16)
+abline(0,1, col='grey', lwd=1, lty=2)
+new.data <- predict(lm(DSest~DSreal),interval="prediction")  
+S <- sqrt((sum((new.data[,1] - DSest)^2)) / length(DSest))
+PI <- new.data[1,1] - new.data[1,2]
+print(paste('Standard error of estimate:', round(S, 2)))
+print(paste('Prediction interval:', round(PI, 2)))
+
+lines(DSreal,new.data[,1],col="black",lwd=1)
+lines(DSreal,new.data[,2],col="grey",lwd=1)
+lines(DSreal,new.data[,3],col="grey",lwd=1)
+
+
+
+#### comparison of real and estimated HS (linear) #####
+HSest <- na.omit(dataz$HSestLin)
+HSreal <- na.omit(dataz$HS)
+#HSest <- HSest[which(HSreal<8)]
+#HSreal <- HSreal[which(HSreal<8)]
+
+summary(lm(HSest~HSreal))
+plot(HSest~HSreal, xlim=c(0,15), xlab='HS', ylim=c(0,15), ylab='HS (linear estimate)', col=rgb(0,0,0,10,maxColorValue=255), pch=16)
+abline(0,1, col='grey', lwd=1, lty=2)
+new.data <- predict(lm(HSest~HSreal),interval="prediction")  
+S <- sqrt((sum((new.data[,1] - HSest)^2)) / length(HSest))
+PI <- new.data[1,1] - new.data[1,2]
+print(paste('Standard error of estimate:', round(S, 2)))
+print(paste('Prediction interval:', round(PI, 2)))
+
+lines(HSreal,new.data[,1],col="black",lwd=1)
+lines(HSreal,new.data[,2],col="grey",lwd=1)
+lines(HSreal,new.data[,3],col="grey",lwd=1)
+
+
+
+#### comparison of real and estimated HS (loess) #####
+HSest <- na.omit(dataz$HsestLoess)
+HSreal <- na.omit(dataz$HS)
+#HSest <- HSest[which(HSreal<8)]
+#HSreal <- HSreal[which(HSreal<8)]
+
+summary(lm(HSest~HSreal))
+plot(HSest~HSreal, xlim=c(0,15), xlab='HS', ylim=c(0,15), ylab='HS (loess estimate)', col=rgb(0,0,0,10,maxColorValue=255), pch=16)
+abline(0,1, col='grey', lwd=1, lty=2)
+new.data <- predict(lm(HSest~HSreal),interval="prediction")  
+S <- sqrt((sum((new.data[,1] - HSest)^2)) / length(HSest))
+PI <- new.data[1,1] - new.data[1,2]
+print(paste('Standard error of estimate:', round(S, 2)))
+print(paste('Prediction interval:', round(PI, 2)))
+
+lines(HSreal,new.data[,1],col="black",lwd=1)
+lines(HSreal,new.data[,2],col="grey",lwd=1)
+lines(HSreal,new.data[,3],col="grey",lwd=1)
+
+dev.off()
+
   
 
 

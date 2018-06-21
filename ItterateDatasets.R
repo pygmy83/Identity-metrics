@@ -1,30 +1,3 @@
-# test settings
-iRange <- c(5,10,15) # value range for number of individuals:
-oRange <- c(4,8,12) #, 12, 16, 20) # value range for number of observations = calls
-pRange <- c(2,4) #, 6, 8, 10)  # value range for number of parameters = pcs
-itRange <- c(1:5)# value range for number of iterations
-idRange <- c(0.01, 1) # value range for individuality in data
-covRange <- c(0,1) # value range for covariance
-dataz <- ItterateDatasets(covRange,idRange,iRange,oRange,pRange,itRange) 
-
-# settings for an initial analysis
-iRange <- c(5, 10, 15, 20, 25, 30, 35, 40) # value range for number of individuals:
-oRange <- c(4, 8, 12, 16, 20) #, 12, 16, 20) # value range for number of observations = calls
-pRange <- c(2, 4, 6, 8, 10) #, 6, 8, 10)  # value range for number of parameters = pcs
-itRange <- c(1:20)# value range for number of iterations
-idRange <- c(0.01, 1, 2.5, 5, 10) # value range for individuality in data
-covRange <- c(0, 0.25, 0.5, 0.75, 1) # value range for covariance 
-dataz <- ItterateDatasets(covRange,idRange,iRange,oRange,pRange,itRange) 
-
-# analysis to get HS values up to about 10 for DS and HS conversions
-iRange <- c(5, 15, 20, 25, 30, 35, 40) # range for number of individuals:
-oRange <- c(4, 8, 12, 16, 20) # range for number of observations = calls
-pRange <- c(2, 4, 6, 8, 10) #, 6, 8, 10)  # range for number of parameters = pcs
-itRange <- c(1:10)# range for number of iterations
-idRange <- c(0.1, 0.25, 0.5, 0.75, 1, 1.33, 1.66, 2)
-covRange <- c(0)
-dataz <- ItterateDatasets(covRange,idRange,iRange,oRange,pRange,itRange) 
-
 ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
   dataz <- NULL
   tottime <- proc.time()
@@ -43,7 +16,7 @@ ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
           for (p in 1:length(pRange)) {
             #p <- 4  
             
-            for (it in itRange) {
+            for (it in 1:length(itRange)) {
               #temp <- GenerateDataset(i, o, p, individualityRange[ir])
               #temp <- GenerateDataset2(iRange[i], oRange[o], pRange[p], covRange[cov], idRange[id])
               temp <- GenerateMultivariateDataset(iRange[i], oRange[o], pRange[p], covRange[cov], idRange[id])
@@ -63,9 +36,9 @@ ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
               
               datazpred <- data.frame(w=iRange[i], x=oRange[o], z=HS)
               DSestLoess <- predict(HStoDSloess, datazpred) 
-              DSestLin <- predict(HStoDSlin, data.frame(y=HS))
+              DSestLin <- predict(HStoDSlin, data.frame(z=HS))
               
-              dataz <- rbind(dataz, data.frame(covRange[cov],idRange[id],iRange[i], oRange[o], pRange[p], it, 
+              dataz <- rbind(dataz, data.frame(covRange[cov],idRange[id],iRange[i], oRange[o], pRange[p], itRange[it], 
                                                  DS, HS, MI, HM, HSestLoess, HSestLin, DSestLoess, DSestLin))
               #datasetname <- paste(i,o,p,it)
               #write.table(temp, file=paste0('dataset', datasetname,'.csv'), sep=';', row.names = F)
@@ -83,17 +56,16 @@ ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
   }# cov
   print('total time:'); print(proc.time()-tottime)
   row.names(dataz) <- NULL
-  names(dataz)[1:5] <- c('cov', 'id', 'i', 'o', 'p')
+  names(dataz)[1:6] <- c('cov', 'id', 'i', 'o', 'p', 'it')
   dataz <- round(dataz,3)
   return(dataz)
 }
 
+#write.table(dataz, 'clipboard-100000', sep='\t', row.names=F)
 
-write.table(dataz, 'clipboard-100000', sep='\t', row.names=F)
-
-y <- dataz$HM
-x <- dataz$i
-plotmeans(y~x, bars=T,n.label=F,barcol='black',
-          yaxt ='n', xaxt='n',
-          cex=2, cex.lab=2, cex.axis=2)
+#y <- dataz$HM
+#x <- dataz$i
+#plotmeans(y~x, bars=T,n.label=F,barcol='black',
+#          yaxt ='n', xaxt='n',
+#          cex=2, cex.lab=2, cex.axis=2)
 

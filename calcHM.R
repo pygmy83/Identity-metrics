@@ -16,7 +16,7 @@ calcHM <- function(temp){
 }
 
 
-### calcMeanVec - calculates centroid of given samples
+### calcMeanVec - calculates centroid of measurments for each individual
 calcMeanVec <- function(Y){
   nvars <- ncol(Y)
   MeanVec <- rep(NA, nvars)
@@ -48,27 +48,9 @@ calcDistW <- function (temp) {
   DistW <- rep(NA, nindivs)
     for (i in 1:nindivs){
       temp.id <- temp[temp[,1]==indivs[i],]
-      #temp.id <- temp[temp$id==indivs[i],]
       DistW[i] <- calcDistT(temp.id)
     }
   return(mean(DistW))
 }
 
 
-### HM and covariance ###
-iRange <- c(10)
-oRange <- c(10)
-pRange <- c(2)
-itRange <- c(1)
-idRange <- c(2)
-covRange <- c(1)
-
-temp <- GenerateDataset2(iRange[1], oRange[1], pRange[1], covRange[1], idRange[1])
-eigs <- prcomp(temp[,-1])$sdev^2
-varexplained <- eigs / sum(eigs)
-temp <- calcPCA(temp)
-
-HS <- calcHS2(temp)[2]; HS
-HM <- calcHM2(temp); HM
-
-  

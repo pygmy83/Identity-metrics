@@ -3,28 +3,17 @@ ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
   tottime <- proc.time()
   
   for (cov in 1:length(covRange)){
-    
     for (id in 1:length(idRange)){
-      
       for (i in 1:length(iRange)) {
-        #i <- 7
         ptm <- proc.time()  
-        
         for (o in 1:length(oRange)) {
-          #o <- 10  
-          
           for (p in 1:length(pRange)) {
-            #p <- 4  
-            
             for (it in 1:length(itRange)) {
-              #temp <- GenerateDataset(i, o, p, individualityRange[ir])
-              #temp <- GenerateDataset2(iRange[i], oRange[o], pRange[p], covRange[cov], idRange[id])
               temp <- GenerateMultivariateDataset(iRange[i], oRange[o], pRange[p], covRange[cov], idRange[id])
               eigs <- prcomp(temp[,-1])$sdev^2
               varexplained <- eigs / sum(eigs)
               temp <- calcPCA(temp)
-              #print(qplot(temp[,2], temp[,3], colour=temp[,1], main=paste0(cov, '-', it)))
-              
+
               DS <- calcDS(temp)
               HS <- calcHSnpergroup(temp)[2]
               MI <- calcMI(temp)
@@ -40,14 +29,12 @@ ItterateDatasets <- function(covRange,idRange,iRange,oRange,pRange,itRange){
               
               dataz <- rbind(dataz, data.frame(covRange[cov],idRange[id],iRange[i], oRange[o], pRange[p], itRange[it], 
                                                  DS, HS, MI, HM, HSestLoess, HSestLin, DSestLoess, DSestLin))
-              #datasetname <- paste(i,o,p,it)
-              #write.table(temp, file=paste0('dataset', datasetname,'.csv'), sep=';', row.names = F)
             } #it
             
           } #p
         } #o
         
-        #write.csv(dataz, file='simulationbackup.csv', row.names = F)
+        #write.csv(dataz, file='simulationbackup.csv', row.names = F) # in case of long calculations it is good to backup results after cycles
         print(paste('cov:',cov, 'of', length(covRange))); print(paste('id:',id, 'of', length(idRange))); print(paste('individuals:',i, 'of', length(iRange)))
         print(proc.time()-ptm)
         

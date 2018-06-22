@@ -14,7 +14,6 @@ calcHSntot <- function (temp, sumHS=T){
     modelFormula <- paste(vars[k], '~', vars[1])
     fvalues [k] <- summary(aov(as.formula(modelFormula), data=temp))[[1]][["F value"]][[1]]
     Pr[k] <- summary(aov(as.formula(modelFormula), data=temp))[[1]][["Pr(>F)"]][[1]]
-    #nindiv[k] <- nlevels(temp[,1])
     HS[k] <- log2(sqrt((fvalues[k]+(n-1)) / n)) # ntot
   }
   Pr <- round(Pr, 3)

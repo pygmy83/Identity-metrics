@@ -1,4 +1,3 @@
-#### function definition ###
 GenerateUnivariate <- function(nindivs,ncalls,betweenM, individuality) {
   
   id <- c()
@@ -22,14 +21,13 @@ GenerateUnivariate <- function(nindivs,ncalls,betweenM, individuality) {
 
 
 #### function test ####
-nindivs <- 5 # the dataset will consist of 5 individuals
-ncalls <- 10 # there will be 10 observations per individual 
-betweenM <- 500 # the variable mean = 500
-individuality <- 2 # between-individual SD will be twice larger than within-individual SD
-temp <- GenerateUnivariate(nindivs, ncalls, betweenM, individuality)
-temp
-boxplot(temp$paramvec~temp$id, xlab = 'Individual no.', ylab = 'variable 1', main = paste0('Individuality = ', individuality))
-
-rm (nindivs, ncalls, betweenM, individuality, temp)
+#nindivs <- 5 # the dataset will consist of 5 individuals
+#ncalls <- 10 # there will be 10 observations per individual 
+#betweenM <- 500 # the variable mean = 500
+#individuality <- 2 # between-individual SD will be twice larger than within-individual SD
+#temp <- GenerateUnivariate(nindivs, ncalls, betweenM, individuality)
+#temp
+#boxplot(temp$paramvec~temp$id, xlab = 'Individual no.', ylab = 'variable 1', main = paste0('Individuality = ', individuality))
+#rm (nindivs, ncalls, betweenM, individuality, temp)
 
 

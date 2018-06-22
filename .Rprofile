@@ -1,6 +1,8 @@
 .First.sys()
 
-#https://gist.github.com/stevenworthington/3178163
+# install and load packages
+# https://gist.github.com/stevenworthington/3178163
+
 ipak <- function(pkg){
   new.pkg <- pkg[!(pkg %in% installed.packages()[, "Package"])]
   if (length(new.pkg)) 

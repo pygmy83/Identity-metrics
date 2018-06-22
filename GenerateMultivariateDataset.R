@@ -1,4 +1,3 @@
-# Function generating multivariate dataset
 GenerateMultivariateDataset <- function(nindivs, ncalls, nvars, covar, individuality){
   
   #build covariance matrix
@@ -46,14 +45,13 @@ GenerateMultivariateDataset <- function(nindivs, ncalls, nvars, covar, individua
 
 
 #### test function ####
-nindivs <- 5 # there will be 5 individuals in the dataset
-ncalls <- 10 # there will be 10 call per each individual in the dataset
-nvars <- 2 # there will be 2 variables 
-covar <- 0 # covarianece between variables will be zero (= variables will be independent)
-individuality <- 10 # between-individual SD for each variable will be "individuality" times higher than within-individual SD 
-temp <- GenerateMultivariateDataset(nindivs,ncalls,nvars,covar,individuality)
-temp
-plot(temp$X1, temp$X2, pch=c(0,1,2,3,4)[temp$id], main=paste0('Individuality (id) = ', individuality), xlab='variable 1', ylab='variable 2', cex=1.5, cex.lab=2, cex.main=2) #col=temp$id
-
-rm(nindivs,ncalls,nvars,covar,individuality,temp)
+#nindivs <- 5 # there will be 5 individuals in the dataset
+#ncalls <- 10 # there will be 10 call per each individual in the dataset
+#nvars <- 2 # there will be 2 variables 
+#covar <- 0 # covarianece between variables will be zero (= variables will be independent)
+#individuality <- 10 # between-individual SD for each variable will be "individuality" times higher than within-individual SD 
+#temp <- GenerateMultivariateDataset(nindivs,ncalls,nvars,covar,individuality)
+#temp
+#plot(temp$X1, temp$X2, pch=c(0,1,2,3,4)[temp$id], main=paste0('Individuality (id) = ', individuality), xlab='variable 1', ylab='variable 2', cex=1.5, cex.lab=2, cex.main=2) #col=temp$id
+#rm(nindivs,ncalls,nvars,covar,individuality,temp)
 

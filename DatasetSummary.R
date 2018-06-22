@@ -1,7 +1,3 @@
-destination <- './empirical datasets examples'
-temp <- DatasetSummary(destination, pca=T)
-write.table(temp, paste0(destination, '/datasetsummary.csv'), sep=';')
-
 DatasetSummary <- function(destination, pca){
   d.summary <- NULL
   filelist_path <- list.files(path=destination, pattern='.csv', full.names=T)
@@ -19,39 +15,30 @@ DatasetSummary <- function(destination, pca){
     
     ### if pca=T, dataset is scaled and centered and variables are subjected to pca
     if(pca){
-      # remove constant variables
+      # remove variables that have no variation
       eigs <- prcomp(dataz[,-1])$sdev^2
       varexplained <- eigs / sum(eigs)
       keepcols <- which(varexplained>0.0001)+1
-      #keepcols <- c(2,3)
-      
+
       dataz <- calcPCAscaled(dataz)
-      #print(filelist[i]); print(names(dataz)[keepcols])
       dataz <- data.frame(dataz[,1], dataz[,keepcols])
       nPCAs <- length(keepcols)
-      #print(qplot(dataz[,2], dataz[,3], colour=dataz[,1], main=paste(filelist[i])))
       plot(dataz[,2], dataz[,3], pch=c(0,1,2,3,4)[dataz[,1]], main=paste(filelist[i]), xlab='PC1', ylab='PC2', cex=1.5, cex.lab=2, cex.main=2)      } else {}
-      #plot(dataz[,2], dataz[,3], col=dataz[,1], pch=20, main=paste(filelist[i]), xlab='PC1', ylab='PC2')      } else {}
-  
+
     HS <- calcHSnpergroup(dataz)[2]
     DS <- calcDS(dataz)
     HM <- calcHM(dataz)
     MI <- calcMI(dataz)
     datazpred <- data.frame(w=nindivs, x=round(mean(ncalls),0), y=DS)
-    HSest <- predict(m1, datazpred)
+    HSest <- predict(DStoHSloess, datazpred)
     datazpred <- data.frame(w=nindivs, x=round(mean(ncalls),0), z=HS)
-    DSest <- predict(m1estDS, datazpred) # m1red - m1redestDS
+    DSest <- predict(HStoDSloess, datazpred)
     
     d.summary <- rbind(d.summary, data.frame(filelist[i], nindivs, minncalls, 
                                              maxncalls, nvars, nPCAs, HS, DS, HM, MI, HSest, DSest))
   }
   
-  #d.summary$HSrank <- rank(datasetsummary$HS, ties.method= "average")
-  #d.summary$DSrank <- round(rank(datasetsummary$DS, ties.method= "average"), 0)
-  #d.summary$HMrank <- rank(datasetsummary$HM, ties.method= "average")
-  #d.summary$AUCrank <- rank(datasetsummary$AUC, ties.method= "average")
-  
-  #return(d.summary[order(datasetsummary$HSrank, decreasing=T),])
+  row.names(d.summary) <- NULL
   return(d.summary)
 }
 

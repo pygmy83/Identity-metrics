@@ -2,12 +2,6 @@ calcHSvarcomp <- function (temp, sumHS=T) {
   
     nvars <- ncol(temp)
     vars <- names(temp)
-    #n <- nrow(temp)
-    #indivs <- levels(as.factor(temp[,1]))
-    #nindiv <- length(indivs)
-    #npergroup <- nrow(temp) / nindiv
-    #fvalues <- rep(NA, nvars)
-    # Pr <- rep(NA, nvars) P-value is not calculated for mixed model
     HS <- rep(NA, nvars) 
 
     randomVar <- rep(NA,nvars)
@@ -23,7 +17,6 @@ calcHSvarcomp <- function (temp, sumHS=T) {
       HS[k] <- log2((totalVar[k] / residVar[k]))
     }
     
-    # Pr <- round(Pr, 3)
     HS <- round(HS, 2)
     result <- data.frame(vars,HS)
 
